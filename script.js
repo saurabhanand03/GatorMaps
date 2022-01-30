@@ -72,9 +72,6 @@ function initMap() {
     zoom: 15,
     mapId: 'fdfa1f14231eb459'
   });
-  const testMarker1 = new google.maps.Marker({
-    position: { lat: 29.646126638775236, lng: -82.34788034625916},
-  });
   const swBound = new google.maps.Marker({
     position: { lat: 29.631934118994096, lng: -82.37266732833172},
     map,
