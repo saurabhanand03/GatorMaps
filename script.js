@@ -1,11 +1,5 @@
 let map;
 //var bounds = new google.maps.LatLngBounds();
-const UF_Bounds = {
-  north:29.652127882560325,
-  south:29.63041832222747,
-  east:-82.3393812215348,
-  west:-82.37254046414034,
-};
 
 var DiningHoursString = `Au Bon Pain @ Newell Hall	7:00 AM ‑   6:00 PM	7:00 AM ‑   6:00 PM	7:00 AM ‑   6:00 PM	7:00 AM ‑   6:00 PM	7:00 AM ‑   5:00 PM	CLOSED	CLOSED
 Boar's Head @ Little Hall Express	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	CLOSED	CLOSED
@@ -66,13 +60,21 @@ DiningLocations.forEach((element, index) => {
 });
 console.log(DiningLocationsInfo);
 
+const UF_Bounds = {
+  north:29.652127882560325,
+  south:29.63041832222747,
+  east:-82.3393812215348,
+  west:-82.37254046414034,
+};
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 29.6420106062, lng: -82.3559600555},
     zoom: 15,
     mapId: 'fdfa1f14231eb459'
   });
-
+  const testMarker1 = new google.maps.Marker({
+    position: { lat: 29.646126638775236, lng: -82.34788034625916},
+  });
   const swBound = new google.maps.Marker({
     position: { lat: 29.631934118994096, lng: -82.37266732833172},
     map,
