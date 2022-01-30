@@ -1,5 +1,5 @@
 let map;
-//var bounds = new google.maps.LatLngBounds();
+// Information gathered from Google Maps at each restaurant's relative location
 var HoursString = `Au Bon Pain @ Newell Hall	7:00 AM ‑   6:00 PM	7:00 AM ‑   6:00 PM	7:00 AM ‑   6:00 PM	7:00 AM ‑   6:00 PM	7:00 AM ‑   5:00 PM	CLOSED	CLOSED
 Boar's Head @ Little Hall Express	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	CLOSED	CLOSED
 Camellia Court Café @ Harn Museum of Art	CLOSED	10:00 AM ‑   4:00 PM	10:00 AM ‑   4:00 PM	10:00 AM ‑   4:00 PM	10:00 AM ‑   4:00 PM	10:00 AM ‑   4:00 PM	CLOSED
@@ -49,6 +49,7 @@ Starbucks @ Reitz Union	7:00 AM ‑   8:00 PM	7:00 AM ‑   8:00 PM	7:00 AM ‑ 
 Subway @ Reitz Union	8:00 AM ‑   9:00 PM	8:00 AM ‑   9:00 PM	8:00 AM ‑   9:00 PM	8:00 AM ‑   9:00 PM	8:00 AM ‑   9:00 PM	8:00 AM ‑   8:00 PM	8:00 AM ‑   8:00 PM
 Wendy's @ Reitz Union	10:30 AM ‑   7:00 PM	10:30 AM ‑   7:00 PM	10:30 AM ‑   7:00 PM	10:30 AM ‑   7:00 PM	10:30 AM ‑   7:00 PM	11:00 AM ‑   6:00 PM	11:00 AM ‑   6:00 PM
 Wing Zone @ Reitz Union	11:00 AM ‑   6:00 PM	11:00 AM ‑   6:00 PM	11:00 AM ‑   6:00 PM	11:00 AM ‑   6:00 PM	11:00 AM ‑   6:00 PM	CLOSED	CLOSED`;
+// Information gathered from https://www.bsd.ufl.edu/dining/Hours/RegularHours.aspx
 var LocationsString = `Au Bon Pain, 29.649089900388773, -82.34512855118298
 Boar's Head, 29.648680515162162, -82.34136222661243
 Camellia Court Café, 29.637051082253908, -82.3701569258102
@@ -98,18 +99,22 @@ Starbucks @ Reitz Union, 29.645941541966536, -82.34785692194987
 Subway @ Reitz Union, 29.646604377030123, -82.34832559576564
 Wendy's @ Reitz Union, 29.64627616502043, -82.34774311904995
 Wing Zone @ Reitz Union, 29.64629624569304, -82.34751660389628`;
-var days = "Monday\tTuesday\tWednesday\tThursday\tFriday\tSaturday\tSunday".split("\t");
 var HoursArray = HoursString.split("\n");
 var LocationsArray = LocationsString.split("\n");
 var HoursInfo = [];
 var LocationsInfo = [];
+// Creating 2d array housing text window information
 HoursArray.forEach((element, index) => {
   HoursInfo[index] = element.split("\t");
 });
+// Creating 2d array housing location information
 LocationsArray.forEach((element, index) => {
   LocationsInfo[index] = element.split(", ");
 });
-
+var days = "Monday\tTuesday\tWednesday\tThursday\tFriday\tSaturday\tSunday".split("\t");
+console.log(HoursInfo);
+console.log(LocationsInfo);
+// Setting the boundaries of the map
 const UF_Bounds = {
   north:29.656627882560325,
   south:29.62653832222747,
@@ -117,16 +122,7 @@ const UF_Bounds = {
   west:-82.37654046414034,
 };
 
-// Initialize Maps
 function initMap() {
-  const UF_Bounds = {
-    north:29.652127882560325,
-    south:29.63041832222747,
-    east:-82.3393812215348,
-    west:-82.37254046414034,
-  };
-
-  // Implement the map
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 29.6516344, lng: -82.3248262 },
     restriction:{
@@ -136,50 +132,46 @@ function initMap() {
     zoom: 15,
     mapId: 'fdfa1f14231eb459'
   });
-
-  // Add markers for each dining location
   const markers = [];
   const markerInfos = [];
   markerInfo = new google.maps.InfoWindow({
   });
+  // Setting the text in the info windows
   for (let i = 0; i < LocationsInfo.length; i++) {
     let text = "<b><font size='+1'>" + LocationsInfo[i][0] + "</b></font><br><p  style='text-align: center'>";
     for (var j = 1; j < (HoursInfo[i]).length; j++) {
       text += "<b>" + days[j - 1] + "</b>: " + HoursInfo[i][j] + "<br>";
     }
+    // Special case: GCDC
     if (i == 16) {
       text +=  "<a href='https://gatordining.com/gator-corner-dining-center-menu/' target='_blank' rel='noopener noreferrer'><b>Gator Corner Dining Center Menu</b></a>";
     }
+    // Special case: Broward Dining Center
     if (i == 14) {
       text +=  "<a href='https://gatordining.com/fresh-food-company-menu/' target='_blank' rel='noopener noreferrer'><b>Broward Dining Center Menu</b></a>";
     }
     text += "</p>";
     console.log(LocationsInfo[i][1]);
     console.log(parseFloat(LocationsInfo[i][1]));
+    // Makes a new marker in each iteration at the restaurant's location
     markers[i] = new google.maps.Marker({
       position: {lat: parseFloat(LocationsInfo[i][1]), lng: parseFloat(LocationsInfo[i][2])},
       map,
       icon: "Orange_Marker.png",
       content: text,
     });
-
+    // On click on marker, set content of the info window to the marker's unique text
     google.maps.event.addListener(markers[i], 'click', function() {
       markerInfo.setContent(this.content);
       markerInfo.open(map, this);
     });
+    // On click away from markers, close info window
     map.addListener("click", () => {
       markerInfo.close({
         anchor: map,
         map,
         shouldFocus: true,
       });
-      map.addListener("click", () => {
-        markerInfos[i].close({
-          anchor: markers[i],
-          map,
-          shouldFocus: false,
-        });
-      });
-    }
+    });
   }
 }
