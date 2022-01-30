@@ -99,7 +99,8 @@ function initMap() {
 
 }
 
-var t = 'DiningHours.txt';
-
+/*var t = 'DiningHours.txt';
 var r;
-fetch(t).then( r => r.text() ).then( t => console.log(t) );
+fetch(t).then( r => r.text() ).then( t => console.log(t) );*/
+const response = await fetch('DiningHours.txt');
+  const reader = response.body.getReader();
