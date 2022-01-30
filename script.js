@@ -98,6 +98,7 @@ Starbucks @ Reitz Union, 29.645941541966536, -82.34785692194987
 Subway @ Reitz Union, 29.646604377030123, -82.34832559576564
 Wendy's @ Reitz Union, 29.64627616502043, -82.34774311904995
 Wing Zone @ Reitz Union, 29.64629624569304, -82.34751660389628`;
+var days = "Monday\tTuesday\tWednesday\tThursday\tFriday\tSaturday\tSunday".split("\t");
 var HoursArray = HoursString.split("\n");
 var LocationsArray = LocationsString.split("\n");
 var HoursInfo = [];
@@ -108,17 +109,42 @@ HoursArray.forEach((element, index) => {
 LocationsArray.forEach((element, index) => {
   LocationsInfo[index] = element.split(", ");
 });
-var days = "Monday\tTuesday\tWednesday\tThursday\tFriday\tSaturday\tSunday".split("\t");
-console.log(HoursInfo);
-console.log(LocationsInfo);
 
-const UF_Bounds = {
-  north:29.652127882560325,
-  south:29.63041832222747,
-  east:-82.3393812215348,
-  west:-82.37254046414034,
-};
+function isOpen(HourInfo){
+  const today = new Date();
+  var currentDay = today.getDay();
+  if(currentDay == 0) currentDay = 7;
+  var currentTime = today.getHours() + today.getMinutes()/60;
+  
+  if(HourInfo[currentDay]=="CLOSED") return false;
+  var str = HourInfo[currentDay].split(" ‑  ");
+  
+  var openTime = parseFloat(str[0].slice(0, str[0].indexOf(':'))), 
+  closeTime = parseFloat((str[1].slice(0, str[1].indexOf(':'))).trim());
+  
+  if(str[0].slice(-2)=="PM") openTime += 12;
+  if(str[1].slice(-2)=="PM") closeTime += 12;
+  if(str[1].slice(-2)=="AM") closeTime += 24;
+  
+  openTime += parseFloat(str[0].slice(str[0].indexOf(':')+1, str[0].indexOf(' ')))/60;
+  closeTime += parseFloat(str[1].trim().slice(str[1].trim().indexOf(':')+1, str[1].trim().indexOf(' ')))/60;
+  console.log(currentTime);
+  console.log(openTime);
+  console.log(closeTime);
+  if(currentTime >= openTime && currentTime <= closeTime) return true;
+  else return false;
+}
+
+// Initialize Maps
 function initMap() {
+  const UF_Bounds = {
+    north:29.652127882560325,
+    south:29.63041832222747,
+    east:-82.3393812215348,
+    west:-82.37254046414034,
+  };
+
+  // Implement the map
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 29.6516344, lng: -82.3248262 },
     restriction:{
@@ -129,31 +155,42 @@ function initMap() {
     mapId: 'fdfa1f14231eb459'
   });
 
-  const testMarker1 = new google.maps.Marker({
-    position: { lat: 29.631934118994096, lng: -82.37266732833172},
-    map,
-    icon: "Orange_Marker.png",
-  });
-  const testWindow1 = new google.maps.InfoWindow({
-      content: "test",
-  });
-  testMarker1.addListener("click", () => {
-      testWindow1.open({
-          anchor: testMarker1,
+  // Add markers for each dining location
+  const markers = [];
+  const markerInfos = [];
+  for (let i = 0; i < LocationsInfo.length; i++) {
+    console.log(HoursInfo[i]);
+    console.log(isOpen(HoursInfo[i]) ? "OPEN" : "CLOSED");
+    if(isOpen(HoursInfo[i])){
+      // Creating hour menus
+      let text = "<b><font size='+1'>" + LocationsInfo[i][0] + "</b></font><br><p  style='text-align: center'>";
+      for (var j = 1; j < (HoursInfo[i]).length; j++) {
+        text += "<b>" + days[j - 1] + "</b>: " + HoursInfo[i][j] + "<br>";
+      }
+      text += "</p>";
+
+      markers[i] = new google.maps.Marker({
+        position: {lat: parseFloat(LocationsInfo[i][1]), lng: parseFloat(LocationsInfo[i][2])},
+        map,
+        icon: "Orange_Marker.png",
+      });
+      markerInfos[i] = new google.maps.InfoWindow({
+        content: text,
+      });
+      markers[i].addListener("click", () => {
+        markerInfos[i].open({
+          anchor: markers[i],
+          map,
+          shouldFocus: true,
+        });
+      });
+      map.addListener("click", () => {
+        markerInfos[i].close({
+          anchor: markers[i],
           map,
           shouldFocus: false,
+        });
       });
-  });
-
-  DiningLocationsInfo.forEach((element, index) => {
-    console.log(index + " " + element);
-  });
-
-
+    }
+  }
 }
-
-/*var t = 'DiningHours.txt';
-var r;
-fetch(t).then( r => r.text() ).then( t => console.log(t) );
-const response = await fetch('DiningHours.txt');
-  const reader = response.body.getReader();*/
