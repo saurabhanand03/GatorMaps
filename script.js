@@ -7,7 +7,7 @@ const UF_Bounds = {
   west:-82.37254046414034,
 };
 
-var testStr = `Au Bon Pain @ Newell Hall	7:00 AM ‑   6:00 PM	7:00 AM ‑   6:00 PM	7:00 AM ‑   6:00 PM	7:00 AM ‑   6:00 PM	7:00 AM ‑   5:00 PM	CLOSED	CLOSED
+var DiningHoursString = `Au Bon Pain @ Newell Hall	7:00 AM ‑   6:00 PM	7:00 AM ‑   6:00 PM	7:00 AM ‑   6:00 PM	7:00 AM ‑   6:00 PM	7:00 AM ‑   5:00 PM	CLOSED	CLOSED
 Boar's Head @ Little Hall Express	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	CLOSED	CLOSED
 Camellia Court Café @ Harn Museum of Art	CLOSED	10:00 AM ‑   4:00 PM	10:00 AM ‑   4:00 PM	10:00 AM ‑   4:00 PM	10:00 AM ‑   4:00 PM	10:00 AM ‑   4:00 PM	CLOSED
 Chick-fil-A @ Broward Dining Center	10:00 AM ‑   8:00 PM	10:00 AM ‑   8:00 PM	10:00 AM ‑   8:00 PM	10:00 AM ‑   8:00 PM	10:00 AM ‑   8:00 PM	10:00 AM ‑   4:00 PM	CLOSED
@@ -59,12 +59,12 @@ Starbucks @ Reitz Union	7:00 AM ‑   8:00 PM	7:00 AM ‑   8:00 PM	7:00 AM ‑ 
 Subway @ Reitz Union	8:00 AM ‑   9:00 PM	8:00 AM ‑   9:00 PM	8:00 AM ‑   9:00 PM	8:00 AM ‑   9:00 PM	8:00 AM ‑   9:00 PM	8:00 AM ‑   8:00 PM	8:00 AM ‑   8:00 PM
 Wendy's @ Reitz Union	10:30 AM ‑   7:00 PM	10:30 AM ‑   7:00 PM	10:30 AM ‑   7:00 PM	10:30 AM ‑   7:00 PM	10:30 AM ‑   7:00 PM	11:00 AM ‑   6:00 PM	11:00 AM ‑   6:00 PM
 Wing Zone @ Reitz Union	11:00 AM ‑   6:00 PM	11:00 AM ‑   6:00 PM	11:00 AM ‑   6:00 PM	11:00 AM ‑   6:00 PM	11:00 AM ‑   6:00 PM	CLOSED	CLOSED`;
-var testArr = testStr.split("\n");
-var testArrArr = [];
-testArr.forEach((element, index) => {
-  testArrArr[index] = element.split("\t");
+var DiningLocations = DiningHoursString.split("\n");
+var DiningLocationsInfo = [];
+DiningLocations.forEach((element, index) => {
+  DiningLocationsInfo[index] = element.split("\t");
 });
-console.log(testArrArr);
+console.log(DiningLocationsInfo);
 
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
