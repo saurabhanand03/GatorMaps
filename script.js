@@ -110,30 +110,12 @@ LocationsArray.forEach((element, index) => {
   LocationsInfo[index] = element.split(", ");
 });
 
-function isOpen(HourInfo){
-  const today = new Date();
-  var currentDay = today.getDay();
-  if(currentDay == 0) currentDay = 7;
-  var currentTime = today.getHours() + today.getMinutes()/60;
-  
-  if(HourInfo[currentDay]=="CLOSED") return false;
-  var str = HourInfo[currentDay].split(" ‑  ");
-  
-  var openTime = parseFloat(str[0].slice(0, str[0].indexOf(':'))), 
-  closeTime = parseFloat((str[1].slice(0, str[1].indexOf(':'))).trim());
-  
-  if(str[0].slice(-2)=="PM") openTime += 12;
-  if(str[1].slice(-2)=="PM") closeTime += 12;
-  if(str[1].slice(-2)=="AM") closeTime += 24;
-  
-  openTime += parseFloat(str[0].slice(str[0].indexOf(':')+1, str[0].indexOf(' ')))/60;
-  closeTime += parseFloat(str[1].trim().slice(str[1].trim().indexOf(':')+1, str[1].trim().indexOf(' ')))/60;
-  console.log(currentTime);
-  console.log(openTime);
-  console.log(closeTime);
-  if(currentTime >= openTime && currentTime <= closeTime) return true;
-  else return false;
-}
+const UF_Bounds = {
+  north:29.656627882560325,
+  south:29.62653832222747,
+  east:-82.3353812215348,
+  west:-82.37654046414034,
+};
 
 // Initialize Maps
 function initMap() {
@@ -158,31 +140,38 @@ function initMap() {
   // Add markers for each dining location
   const markers = [];
   const markerInfos = [];
+  markerInfo = new google.maps.InfoWindow({
+  });
   for (let i = 0; i < LocationsInfo.length; i++) {
-    console.log(HoursInfo[i]);
-    console.log(isOpen(HoursInfo[i]) ? "OPEN" : "CLOSED");
-    if(isOpen(HoursInfo[i])){
-      // Creating hour menus
-      let text = "<b><font size='+1'>" + LocationsInfo[i][0] + "</b></font><br><p  style='text-align: center'>";
-      for (var j = 1; j < (HoursInfo[i]).length; j++) {
-        text += "<b>" + days[j - 1] + "</b>: " + HoursInfo[i][j] + "<br>";
-      }
-      text += "</p>";
+    let text = "<b><font size='+1'>" + LocationsInfo[i][0] + "</b></font><br><p  style='text-align: center'>";
+    for (var j = 1; j < (HoursInfo[i]).length; j++) {
+      text += "<b>" + days[j - 1] + "</b>: " + HoursInfo[i][j] + "<br>";
+    }
+    if (i == 16) {
+      text +=  "<a href='https://gatordining.com/gator-corner-dining-center-menu/' target='_blank' rel='noopener noreferrer'><b>Gator Corner Dining Center Menu</b></a>";
+    }
+    if (i == 14) {
+      text +=  "<a href='https://gatordining.com/fresh-food-company-menu/' target='_blank' rel='noopener noreferrer'><b>Broward Dining Center Menu</b></a>";
+    }
+    text += "</p>";
+    console.log(LocationsInfo[i][1]);
+    console.log(parseFloat(LocationsInfo[i][1]));
+    markers[i] = new google.maps.Marker({
+      position: {lat: parseFloat(LocationsInfo[i][1]), lng: parseFloat(LocationsInfo[i][2])},
+      map,
+      icon: "Orange_Marker.png",
+      content: text,
+    });
 
-      markers[i] = new google.maps.Marker({
-        position: {lat: parseFloat(LocationsInfo[i][1]), lng: parseFloat(LocationsInfo[i][2])},
+    google.maps.event.addListener(markers[i], 'click', function() {
+      markerInfo.setContent(this.content);
+      markerInfo.open(map, this);
+    });
+    map.addListener("click", () => {
+      markerInfo.close({
+        anchor: map,
         map,
-        icon: "Orange_Marker.png",
-      });
-      markerInfos[i] = new google.maps.InfoWindow({
-        content: text,
-      });
-      markers[i].addListener("click", () => {
-        markerInfos[i].open({
-          anchor: markers[i],
-          map,
-          shouldFocus: true,
-        });
+        shouldFocus: true,
       });
       map.addListener("click", () => {
         markerInfos[i].close({
