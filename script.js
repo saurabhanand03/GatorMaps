@@ -7,10 +7,11 @@ function initMap() {
     zoom: 12,
     mapId: 'fdfa1f14231eb459'
   });
+
   const beachMarker = new google.maps.Marker({
     position: { lat: 29.646126638775236, lng: -82.34788034625916},
     map,
-    icon: "https://icons.iconarchive.com/icons/paomedia/small-n-flat/32/map-marker-icon.png",
+    icon: "Orange_Marker.png",
   });
 
 }
