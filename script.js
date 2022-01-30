@@ -7,15 +7,21 @@ function initMap() {
     zoom: 12,
     mapId: 'fdfa1f14231eb459'
   });
+  const beachMarker = new google.maps.Marker({
+    position: { lat: 29.646126638775236, lng: -82.34788034625916},
+    map,
+    icon: "https://icons.iconarchive.com/icons/paomedia/small-n-flat/32/map-marker-icon.png",
+  });
+
 }
 
 //var fs = require('fs');
 
 // Use fs.readFile() method to read the file
-fs.readFile('DiningHours.txt', 'utf8', function(err, data){
+//fs.readFile('DiningHours.txt', 'utf8', function(err, data){
 
   // Display the file content
-  console.log(data);
-});
+ // console.log(data);
+//});
 
 console.log('readFile called');
