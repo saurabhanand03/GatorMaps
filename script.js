@@ -120,42 +120,40 @@ const UF_Bounds = {
 };
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 29.6420106062, lng: -82.3559600555},
+    center: { lat: 29.6516344, lng: -82.3248262 },
+    restriction:{
+      latLngBounds: UF_Bounds,
+      strictBounds: false,
+    },
     zoom: 15,
     mapId: 'fdfa1f14231eb459'
   });
-  const markers = [];
-  const markerInfos = [];
-  for (let i = 0; i < LocationsInfo.length; i++) {
-    let text = "<b><font size='+1'>" + LocationsInfo[i][0] + "</b></font><br><p  style='text-align: center'>";
-    for (var j = 1; j < (HoursInfo[i]).length; j++) {
-      text += "<b>" + days[j - 1] + "</b>: " + HoursInfo[i][j] + "<br>";
-    }
-    text += "</p>";
-    console.log(LocationsInfo[i][1]);
-    console.log(parseFloat(LocationsInfo[i][1]));
-    markers[i] = new google.maps.Marker({
-      position: {lat: parseFloat(LocationsInfo[i][1]), lng: parseFloat(LocationsInfo[i][2])},
-      map,
-      icon: "Orange_Marker.png",
-    });
-    markerInfos[i] = new google.maps.InfoWindow({
-      content: text,
-    });
-    markers[i].addListener("click", () => {
-      markerInfos[i].open({
-        anchor: markers[i],
-        map,
-        shouldFocus: true,
-      });
-    });
-    map.addListener("click", () => {
 
-      markerInfos[i].close({
-        anchor: markers[i],
-        map,
-        shouldFocus: false,
+  const testMarker1 = new google.maps.Marker({
+    position: { lat: 29.631934118994096, lng: -82.37266732833172},
+    map,
+    icon: "Orange_Marker.png",
+  });
+  const testWindow1 = new google.maps.InfoWindow({
+      content: "test",
+  });
+  testMarker1.addListener("click", () => {
+      testWindow1.open({
+          anchor: testMarker1,
+          map,
+          shouldFocus: false,
       });
-    });
-  }
+  });
+
+  DiningLocationsInfo.forEach((element, index) => {
+    console.log(index + " " + element);
+  });
+
+
 }
+
+/*var t = 'DiningHours.txt';
+var r;
+fetch(t).then( r => r.text() ).then( t => console.log(t) );
+const response = await fetch('DiningHours.txt');
+  const reader = response.body.getReader();*/
