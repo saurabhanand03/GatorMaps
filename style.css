@@ -1,0 +1,22 @@
+#map {
+    height: 60vh;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.banner {
+    background-color: #003087;
+    display: flex;
+}
+
+#logo {
+    padding: auto;
+}
+
+#title {
+    padding: auto;
+}
