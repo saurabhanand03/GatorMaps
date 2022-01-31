@@ -99,6 +99,7 @@ Starbucks @ Reitz Union, 29.645941541966536, -82.34785692194987
 Subway @ Reitz Union, 29.646604377030123, -82.34832559576564
 Wendy's @ Reitz Union, 29.64627616502043, -82.34774311904995
 Wing Zone @ Reitz Union, 29.64629624569304, -82.34751660389628`;
+var days = "Monday\tTuesday\tWednesday\tThursday\tFriday\tSaturday\tSunday".split("\t");
 var HoursArray = HoursString.split("\n");
 var LocationsArray = LocationsString.split("\n");
 var HoursInfo = [];
@@ -111,18 +112,45 @@ HoursArray.forEach((element, index) => {
 LocationsArray.forEach((element, index) => {
   LocationsInfo[index] = element.split(", ");
 });
-var days = "Monday\tTuesday\tWednesday\tThursday\tFriday\tSaturday\tSunday".split("\t");
-console.log(HoursInfo);
-console.log(LocationsInfo);
-// Setting the boundaries of the map
-const UF_Bounds = {
-  north:29.656627882560325,
-  south:29.62653832222747,
-  east:-82.3353812215348,
-  west:-82.37654046414034,
-};
 
+ function isOpen(HourInfo){
+   const today = new Date();
+   var currentDay = today.getDay();
+   if(currentDay == 0) currentDay = 7;
+   var currentTime = today.getHours() + today.getMinutes()/60;
+
+  if(HourInfo[currentDay]=="CLOSED") return false;
+  var str = HourInfo[currentDay].split(" ‑  ");
+
+  var openTime = parseFloat(str[0].slice(0, str[0].indexOf(':'))),
+  closeTime = parseFloat((str[1].slice(0, str[1].indexOf(':'))).trim());
+
+  if(str[0].slice(-2)=="PM") openTime += 12;
+  if(str[1].slice(-2)=="PM") closeTime += 12;
+  if(str[1].slice(-2)=="AM") closeTime += 24;
+
+  openTime += parseFloat(str[0].slice(str[0].indexOf(':')+1, str[0].indexOf(' ')))/60;
+  closeTime += parseFloat(str[1].trim().slice(str[1].trim().indexOf(':')+1, str[1].trim().indexOf(' ')))/60;
+  console.log(currentTime);
+  console.log(openTime);
+  console.log(closeTime);
+  if(currentTime >= openTime && currentTime <= closeTime) return true;
+  else return false;
+}
+
+
+// Initialize Maps
 function initMap() {
+  // Settings bounds of the map
+  const UF_Bounds = {
+    north:29.656627882560325,
+    south:29.62653832222747,
+    east:-82.3353812215348,
+    west:-82.37654046414034,
+  };
+
+  // Implement the map
+
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 29.6516344, lng: -82.3248262 },
     restriction:{
@@ -132,46 +160,68 @@ function initMap() {
     zoom: 15,
     mapId: 'fdfa1f14231eb459'
   });
+    if (screen.width <= 480) {
+        var markerIcon = {
+          url: "Orange_Marker.png",
+          scaledSize: new google.maps.Size(screen.width * .18, screen.width * .18)
+        }
+    }
+    else {
+        var markerIcon = {
+            url: "Orange_Marker.png",
+        }
+    }
+    console.log(screen.width);
+    console.log(window.width);
+
+  // Add markers for each dining location
   const markers = [];
   const markerInfos = [];
-  markerInfo = new google.maps.InfoWindow({
+
+  var markerInfo = new google.maps.InfoWindow({
   });
+
+
+
   // Setting the text in the info windows
   for (let i = 0; i < LocationsInfo.length; i++) {
-    let text = "<b><font size='+1'>" + LocationsInfo[i][0] + "</b></font><br><p  style='text-align: center'>";
-    for (var j = 1; j < (HoursInfo[i]).length; j++) {
-      text += "<b>" + days[j - 1] + "</b>: " + HoursInfo[i][j] + "<br>";
-    }
-    // Special case: GCDC
-    if (i == 16) {
-      text +=  "<a href='https://gatordining.com/gator-corner-dining-center-menu/' target='_blank' rel='noopener noreferrer'><b>Gator Corner Dining Center Menu</b></a>";
-    }
-    // Special case: Broward Dining Center
-    if (i == 14) {
-      text +=  "<a href='https://gatordining.com/fresh-food-company-menu/' target='_blank' rel='noopener noreferrer'><b>Broward Dining Center Menu</b></a>";
-    }
-    text += "</p>";
-    console.log(LocationsInfo[i][1]);
-    console.log(parseFloat(LocationsInfo[i][1]));
-    // Makes a new marker in each iteration at the restaurant's location
-    markers[i] = new google.maps.Marker({
-      position: {lat: parseFloat(LocationsInfo[i][1]), lng: parseFloat(LocationsInfo[i][2])},
-      map,
-      icon: "Orange_Marker.png",
-      content: text,
-    });
-    // On click on marker, set content of the info window to the marker's unique text
-    google.maps.event.addListener(markers[i], 'click', function() {
-      markerInfo.setContent(this.content);
-      markerInfo.open(map, this);
-    });
-    // On click away from markers, close info window
-    map.addListener("click", () => {
-      markerInfo.close({
-        anchor: map,
+    if(isOpen(HoursInfo[i])){
+      // Creating hour menus
+      let text = "<b><font size='+1'>" + LocationsInfo[i][0] + "</b></font><br><p  style='text-align: center'>";
+      for (var j = 1; j < (HoursInfo[i]).length; j++) {
+        text += "<b>" + days[j - 1] + "</b>: " + HoursInfo[i][j] + "<br>";
+      }
+      // Special case: GCDC
+      if (i == 16) {
+        text +=  "<a href='https://gatordining.com/gator-corner-dining-center-menu/' target='_blank' rel='noopener noreferrer'><b>Gator Corner Dining Center Menu</b></a>";
+      }
+      // Special case: Broward Dining Center
+      if (i == 14) {
+        text +=  "<a href='https://gatordining.com/fresh-food-company-menu/' target='_blank' rel='noopener noreferrer'><b>Broward Dining Center Menu</b></a>";
+      }  
+      text += "</p>";
+
+      // Makes a new marker in each iteration at the restaurant's location
+      markers[i] = new google.maps.Marker({
+        position: {lat: parseFloat(LocationsInfo[i][1]), lng: parseFloat(LocationsInfo[i][2])},
         map,
-        shouldFocus: true,
+        icon: markerIcon,
+        content: text,
       });
-    });
+      // On click on marker, set content of the info window to the marker's unique text
+      google.maps.event.addListener(markers[i], 'click', function() {
+        markerInfo.setContent(this.content);
+        markerInfo.setOptions(markerInfo.minWidth = screen.width*.9);
+        markerInfo.open(map, this);
+      });
+      // On click away from markers, close info window
+      map.addListener("click", () => {
+        markerInfo.close({
+          anchor: map,
+          map,
+          shouldFocus: true,
+        });
+      });
+    }
   }
 }
