@@ -1,5 +1,5 @@
 let map;
-// Information gathered from Google Maps at each restaurant's relative location
+// Information gathered from https://www.bsd.ufl.edu/dining/Hours/RegularHours.aspx
 var HoursString = `Au Bon Pain @ Newell Hall	7:00 AM ‑   6:00 PM	7:00 AM ‑   6:00 PM	7:00 AM ‑   6:00 PM	7:00 AM ‑   6:00 PM	7:00 AM ‑   5:00 PM	CLOSED	CLOSED
 Boar's Head @ Little Hall Express	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	7:00 AM ‑   5:00 PM	CLOSED	CLOSED
 Camellia Court Café @ Harn Museum of Art	CLOSED	10:00 AM ‑   4:00 PM	10:00 AM ‑   4:00 PM	10:00 AM ‑   4:00 PM	10:00 AM ‑   4:00 PM	10:00 AM ‑   4:00 PM	CLOSED
@@ -49,7 +49,7 @@ Starbucks @ Reitz Union	7:00 AM ‑   8:00 PM	7:00 AM ‑   8:00 PM	7:00 AM ‑ 
 Subway @ Reitz Union	8:00 AM ‑   9:00 PM	8:00 AM ‑   9:00 PM	8:00 AM ‑   9:00 PM	8:00 AM ‑   9:00 PM	8:00 AM ‑   9:00 PM	8:00 AM ‑   8:00 PM	8:00 AM ‑   8:00 PM
 Wendy's @ Reitz Union	10:30 AM ‑   7:00 PM	10:30 AM ‑   7:00 PM	10:30 AM ‑   7:00 PM	10:30 AM ‑   7:00 PM	10:30 AM ‑   7:00 PM	11:00 AM ‑   6:00 PM	11:00 AM ‑   6:00 PM
 Wing Zone @ Reitz Union	11:00 AM ‑   6:00 PM	11:00 AM ‑   6:00 PM	11:00 AM ‑   6:00 PM	11:00 AM ‑   6:00 PM	11:00 AM ‑   6:00 PM	CLOSED	CLOSED`;
-// Information gathered from https://www.bsd.ufl.edu/dining/Hours/RegularHours.aspx
+// Information gathered from Google Maps at each restaurant's relative location
 var LocationsString = `Au Bon Pain, 29.649089900388773, -82.34512855118298
 Boar's Head, 29.648680515162162, -82.34136222661243
 Camellia Court Café, 29.637051082253908, -82.3701569258102
@@ -99,41 +99,45 @@ Starbucks @ Reitz Union, 29.645941541966536, -82.34785692194987
 Subway @ Reitz Union, 29.646604377030123, -82.34832559576564
 Wendy's @ Reitz Union, 29.64627616502043, -82.34774311904995
 Wing Zone @ Reitz Union, 29.64629624569304, -82.34751660389628`;
+// Creating array of days of week
 var days = "Monday\tTuesday\tWednesday\tThursday\tFriday\tSaturday\tSunday".split("\t");
+// Creating nested array to house hour information for each restaurant
 var HoursArray = HoursString.split("\n");
-var LocationsArray = LocationsString.split("\n");
 var HoursInfo = [];
-var LocationsInfo = [];
-// Creating 2d array housing text window information
 HoursArray.forEach((element, index) => {
   HoursInfo[index] = element.split("\t");
 });
-// Creating 2d array housing location information
+// Creating nested array to house location information for each restaurant
+var LocationsArray = LocationsString.split("\n");
+var LocationsInfo = [];
 LocationsArray.forEach((element, index) => {
   LocationsInfo[index] = element.split(", ");
 });
 
- function isOpen(HourInfo){
-   const today = new Date();
-   var currentDay = today.getDay();
-   if(currentDay == 0) currentDay = 7;
-   var currentTime = today.getHours() + today.getMinutes()/60;
-
+// Function to check if restaurant is open
+function isOpen(HourInfo){
+  // Get current date/time information
+  const today = new Date();
+  var currentDay = today.getDay();
+  if(currentDay == 0) currentDay = 7;
+  var currentTime = today.getHours() + today.getMinutes()/60;
+  // Returns false if restaurant is closed
   if(HourInfo[currentDay]=="CLOSED") return false;
+  // Gets opening and closing hours for each restaurant
   var str = HourInfo[currentDay].split(" ‑  ");
-
-  var openTime = parseFloat(str[0].slice(0, str[0].indexOf(':'))),
-  closeTime = parseFloat((str[1].slice(0, str[1].indexOf(':'))).trim());
-
+  var openTime = parseFloat(str[0].slice(0, str[0].indexOf(':')));
+  var closeTime = parseFloat((str[1].slice(0, str[1].indexOf(':'))).trim());
+  // Checks if time is AM or PM
   if(str[0].slice(-2)=="PM") openTime += 12;
   if(str[1].slice(-2)=="PM") closeTime += 12;
   if(str[1].slice(-2)=="AM") closeTime += 24;
-
+  // Adds minutes to opening and closing hours
   openTime += parseFloat(str[0].slice(str[0].indexOf(':')+1, str[0].indexOf(' ')))/60;
   closeTime += parseFloat(str[1].trim().slice(str[1].trim().indexOf(':')+1, str[1].trim().indexOf(' ')))/60;
   console.log(currentTime);
   console.log(openTime);
   console.log(closeTime);
+  // Checks if current time is within open hours of restaurant
   if(currentTime >= openTime && currentTime <= closeTime) return true;
   else return false;
 }
@@ -150,7 +154,6 @@ function initMap() {
   };
 
   // Implement the map
-
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 29.6516344, lng: -82.3248262 },
     restriction:{
@@ -160,28 +163,25 @@ function initMap() {
     zoom: 15,
     mapId: 'fdfa1f14231eb459'
   });
-    if (screen.width <= 480) {
-        var markerIcon = {
+  if (screen.width <= 480) {
+      var markerIcon = {
+        url: "Orange_Marker.png",
+        scaledSize: new google.maps.Size(screen.width * .18, screen.width * .18)
+      }
+  }
+  else {
+      var markerIcon = {
           url: "Orange_Marker.png",
-          scaledSize: new google.maps.Size(screen.width * .18, screen.width * .18)
-        }
-    }
-    else {
-        var markerIcon = {
-            url: "Orange_Marker.png",
-        }
-    }
-    console.log(screen.width);
-    console.log(window.width);
+      }
+  }
+  console.log(screen.width);
+  console.log(window.width);
 
   // Add markers for each dining location
   const markers = [];
   const markerInfos = [];
-
   var markerInfo = new google.maps.InfoWindow({
   });
-
-
 
   // Setting the text in the info windows
   for (let i = 0; i < LocationsInfo.length; i++) {
