@@ -165,13 +165,13 @@ function initMap() {
   });
   if (screen.width <= 480) {
       var markerIcon = {
-        url: "Orange_Marker.png",
+        url: "assets/Orange_Marker.png",
         scaledSize: new google.maps.Size(screen.width * .18, screen.width * .18)
       }
   }
   else {
       var markerIcon = {
-          url: "Orange_Marker.png",
+          url: "assets/Orange_Marker.png",
       }
   }
   console.log(screen.width);
