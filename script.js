@@ -114,32 +114,46 @@ LocationsArray.forEach((element, index) => {
   LocationsInfo[index] = element.split(", ");
 });
 
+
 // Function to check if restaurant is open
 function isOpen(HourInfo){
   // Get current date/time information
   const today = new Date();
-  var currentDay = today.getDay();
-  if(currentDay == 0) currentDay = 7;
-  var currentTime = today.getHours() + today.getMinutes()/60;
+  const currentDay = today.getDay();
+  if(currentDay == 0) {
+    currentDay = 7;
+  }
   // Returns false if restaurant is closed
-  if(HourInfo[currentDay]=="CLOSED") return false;
+  if(HourInfo[currentDay]=="CLOSED") {
+    return false;
+  }
   // Gets opening and closing hours for each restaurant
-  var str = HourInfo[currentDay].split(" ‑  ");
-  var openTime = parseFloat(str[0].slice(0, str[0].indexOf(':')));
-  var closeTime = parseFloat((str[1].slice(0, str[1].indexOf(':'))).trim());
-  // Checks if time is AM or PM
-  if(str[0].slice(-2)=="PM") openTime += 12;
-  if(str[1].slice(-2)=="PM") closeTime += 12;
-  if(str[1].slice(-2)=="AM") closeTime += 24;
-  // Adds minutes to opening and closing hours
-  openTime += parseFloat(str[0].slice(str[0].indexOf(':')+1, str[0].indexOf(' ')))/60;
-  closeTime += parseFloat(str[1].trim().slice(str[1].trim().indexOf(':')+1, str[1].trim().indexOf(' ')))/60;
-  console.log(currentTime);
-  console.log(openTime);
-  console.log(closeTime);
-  // Checks if current time is within open hours of restaurant
-  if(currentTime >= openTime && currentTime <= closeTime) return true;
-  else return false;
+  const dateStr = today.getFullYear() + "-" + (today.getMonth()+1) + "-" + today.getDate() + " ";
+  var todayHours = HourInfo[currentDay].split(" ‑  ");
+  var openTime = new Date(dateStr + todayHours[0]);
+  var closeTime = new Date(dateStr + todayHours[1]);
+  if(closeTime.getHours() < 12){
+    closeTime.setDate(closeTime.getDate()+1);
+  }
+  // Gets closing hours for yesterday
+  const yesterdayDateStr = today.getFullYear() + "-" + (today.getMonth()+1) + "-" + (today.getDate()-1) + " ";
+  var yesterdayHours = HourInfo[currentDay-1].split(" ‑  ");
+  var yesterdayCloseTime = new Date(yesterdayDateStr + yesterdayHours[1]);
+  if(yesterdayCloseTime.getHours() < 12){
+    yesterdayCloseTime.setDate(yesterdayCloseTime.getDate()+1);
+  }
+
+  // console.log(todayHours);
+  // console.log(yesterdayHours);
+  // console.log("\t\t\t\t"+today);
+  // console.log("yesterday close\t" + yesterdayCloseTime);
+  // console.log("open\t\t\t" + openTime);
+  // console.log("close\t\t\t" + closeTime);
+  // console.log("Restaurant " + ((today <= yesterdayCloseTime || (openTime <= today && today <= closeTime)) ? "open" : "closed"));
+  // console.log("\n\n");
+  
+  // Checks if current time is within open hours of restaurant and returns value
+  return today <= yesterdayCloseTime || (openTime <= today && today <= closeTime);
 }
 
 
