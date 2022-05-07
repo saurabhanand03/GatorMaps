@@ -5,7 +5,8 @@ html, body {
     /* background-color: #003087; */
     /* lightblue, aqua, cornflowerblue, cyan, darkcyan*, deepskyblue*, lightseagreen, mediumturquoise, powderblue */
     background-color: royalblue;
-    /*background: #181F91;
+    /* https://www.css-gradient.com/?c1=002e75&c2=49a1c6
+    background: #181F91;
     background: -webkit-linear-gradient(bottom left, #181F91, #278793);
     background: -moz-linear-gradient(bottom left, #181F91, #278793);
     background: linear-gradient(to top right, #181F91, #278793);*/
