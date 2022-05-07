@@ -2,7 +2,13 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #003087;
+    /* background-color: #003087; */
+    /* lightblue, aqua, cornflowerblue, cyan, darkcyan*, deepskyblue*, lightseagreen, mediumturquoise, powderblue */
+    background-color: royalblue;
+    /*background: #181F91;
+    background: -webkit-linear-gradient(bottom left, #181F91, #278793);
+    background: -moz-linear-gradient(bottom left, #181F91, #278793);
+    background: linear-gradient(to top right, #181F91, #278793);*/
 }
 
 #header {
@@ -26,6 +32,7 @@ html, body {
     top: 10%;
     bottom: 4%;
     width: 100%;
+    box-shadow: 0px 0px 30px rgba(255, 153, 0, 0.26);
 }
 
 #footer {

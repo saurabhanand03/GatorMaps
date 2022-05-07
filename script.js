@@ -117,16 +117,19 @@ LocationsArray.forEach((element, index) => {
 
 // Function to check if restaurant is open
 function isOpen(HourInfo){
+  
   // Get current date/time information
-  const today = new Date();
+  let today = new Date();
   const currentDay = today.getDay();
   if(currentDay == 0) {
     currentDay = 7;
   }
+
   // Returns false if restaurant is closed
   if(HourInfo[currentDay]=="CLOSED") {
     return false;
   }
+  
   // Gets opening and closing hours for each restaurant
   const dateStr = today.getFullYear() + "-" + (today.getMonth()+1) + "-" + today.getDate() + " ";
   var todayHours = HourInfo[currentDay].split(" ‑  ");
@@ -135,6 +138,7 @@ function isOpen(HourInfo){
   if(closeTime.getHours() < 12){
     closeTime.setDate(closeTime.getDate()+1);
   }
+  
   // Gets closing hours for yesterday
   const yesterdayDateStr = today.getFullYear() + "-" + (today.getMonth()+1) + "-" + (today.getDate()-1) + " ";
   var yesterdayHours = HourInfo[currentDay-1].split(" ‑  ");
@@ -143,6 +147,7 @@ function isOpen(HourInfo){
     yesterdayCloseTime.setDate(yesterdayCloseTime.getDate()+1);
   }
 
+  // Debugging
   // console.log(todayHours);
   // console.log(yesterdayHours);
   // console.log("\t\t\t\t"+today);
